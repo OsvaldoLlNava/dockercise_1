@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"text/template"
 
 	"github.com/OsvaldoLlNava/dockercise1API/Dockercise1APIDatabase"
 	"github.com/OsvaldoLlNava/dockercise1API/Dockercise1APIModel"
@@ -28,11 +29,21 @@ func specificResult(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func homePage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/home.html")
+	if err != nil {
+		fmt.Fprintf(w, "Bienvenido al Home")
+	}
+
+	err = t.Execute(w, nil)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func handleRequests() {
 	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "bienvenido al home")
-	})
+	r.Get("/", homePage)
 	r.Get("/people", allResults)
 	r.Get("/people/{userId}", specificResult)
 	http.ListenAndServe(":7777", r)
